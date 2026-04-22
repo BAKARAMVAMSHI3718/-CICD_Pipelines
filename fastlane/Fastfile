@@ -1,16 +1,13 @@
 default_platform(:ios)
 
 platform :ios do
-
-  desc "Build IPA and save to Downloads"
+  desc "CI Build Without Signing"
   lane :build_local do
-    gym(
+    build_app(
       scheme: "CICD_Pipelines",
-      export_method: "development",
-      output_directory: File.expand_path("~/Downloads"),
-      output_name: "CICD_Pipelines.ipa",
-      clean: true
+      skip_archive: true,
+      skip_package_ipa: true,
+      xcargs: "CODE_SIGNING_ALLOWED=NO"
     )
   end
-
 end
