@@ -1,35 +1,16 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "Description of what the lane does"
-  lane :test do
-    scan(
+
+  desc "Build IPA and save to Downloads"
+  lane :build_local do
+    gym(
       scheme: "CICD_Pipelines",
-      devices: ["iPhone 15"],
+      export_method: "development",
+      output_directory: File.expand_path("~/Downloads"),
+      output_name: "CICD_Pipelines.ipa",
       clean: true
     )
   end
 
-  desc "Push a new beta build to TestFlight"
-  lane :beta do
-    # setup_ci # Configures keychain for CI
-    
-    # sync_code_signing(type: "appstore") # Uses Match to sync certificates
-    
-    increment_build_number(
-      build_number: lane_context[SharedValues::BUILD_NUMBER] 
-    )
-
-    gym(
-      scheme: "CICD_Pipelines",
-      export_method: "app-store",
-      output_directory: "./build",
-      output_name: "CICD_Pipelines.ipa"
-    )
-
-    pilot(
-      ipa: "./build/CICD_Pipelines.ipa",
-      skip_waiting_for_build_processing: true
-    )
-  end
 end
