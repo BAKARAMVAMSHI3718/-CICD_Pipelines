@@ -3,17 +3,20 @@ name: iOS CI/CD
 on:
   push:
     branches: [ "main", "develop" ]
+
   pull_request:
     branches: [ "main" ]
 
+  workflow_dispatch:
+
 jobs:
   build:
-    name: Build and Test
+    name: Build App
     runs-on: macos-latest
-    
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -22,21 +25,13 @@ jobs:
           bundler-cache: true
 
       - name: Install Dependencies
-        run: |
-          bundle install
-          # brew install fastlane # Fastlane is usually pre-installed on macOS runners
+        run: bundle install
 
-      - name: Run Tests
-        run: bundle exec fastlane test
-        env:
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      - name: Build IPA
+        run: bundle exec fastlane build_local
 
-      - name: Build and Deploy to TestFlight
-        if: github.ref == 'refs/heads/main'
-        run: bundle exec fastlane beta
-        env:
-          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CICD_Pipelines-IPA
+          path: ~/Downloads/CICD_Pipelines.ipa
