@@ -31,4 +31,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: CICD_Pipelines-IPA
-          path: build/
+          path: ~/Users/ahex/Downloads/ipaFile
