@@ -2,33 +2,40 @@ name: iOS CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+      - develop
+
+  pull_request:
+    branches:
+      - main
+
   workflow_dispatch:
 
 jobs:
   build:
+    name: Build App
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - uses: ruby/setup-ruby@v1
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
           bundler: latest
           bundler-cache: true
 
-      - name: Install Gems
+      - name: Install Dependencies
         run: bundle install
 
-      - name: Build App
+      - name: Build IPA
         run: bundle exec fastlane build_local
 
-      - name: Show Build Files
-        run: ls -R build
-
-      - name: Upload IPA
+      - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
           name: CICD_Pipelines-IPA
-          path: ~/Users/ahex/Downloads/ipaFile
+          path: ~/Downloads/CICD_Pipelines.ipa
