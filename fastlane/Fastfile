@@ -1,13 +1,13 @@
 default_platform(:ios)
 
 platform :ios do
-  desc "CI Build Without Signing"
+  desc "Build IPA for CI"
   lane :build_local do
     build_app(
       scheme: "CICD_Pipelines",
-      skip_archive: true,
-      skip_package_ipa: true,
-      xcargs: "CODE_SIGNING_ALLOWED=NO"
+      skip_codesigning: true,
+      output_directory: "./build",
+      output_name: "CICD_Pipelines.ipa"
     )
   end
 end
